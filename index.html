@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Future You — Your Career Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;0,700;1,300;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f4;
+    --surface: #ffffff;
+    --warm: #f5f0e8;
+    --ai-bubble: #ffffff;
+    --user-bubble: #1a1a2e;
+    --accent: #e8633a;
+    --accent2: #3a7bd5;
+    --accent3: #2ecc71;
+    --text: #1a1a2e;
+    --muted: #8b8b9a;
+    --border: #e8e4dc;
+    --shadow: rgba(26,26,46,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Subtle background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(26,26,46,0.03) 1px, transparent 0);
+    background-size: 28px 28px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Top bar */
+  .topbar {
+    position: relative;
+    z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 1px 12px var(--shadow);
+    flex-shrink: 0;
+  }
+
+  .guide-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8633a, #f0a060);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(232,99,58,0.3);
+  }
+
+  .guide-info h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  .guide-info p {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .stage-pill {
+    margin-left: auto;
+    background: var(--warm);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: all 0.4s ease;
+  }
+
+  .stage-pill.active {
+    background: rgba(232,99,58,0.1);
+    border-color: rgba(232,99,58,0.3);
+    color: var(--accent);
+  }
+
+  /* Chat area */
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+    scroll-behavior: smooth;
+  }
+
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-track { background: transparent; }
+  .chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Welcome card */
+  .welcome-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    color: white;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    animation: fadeSlideUp 0.6s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .welcome-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(232,99,58,0.15);
+  }
+
+  .welcome-card::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(58,123,213,0.15);
+  }
+
+  .welcome-card h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .welcome-card h1 em {
+    font-style: italic;
+    color: #f0a060;
+  }
+
+  .welcome-card p {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.6;
+    font-weight: 300;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stage-track {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stage-dot {
+    width: 28px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.2);
+    transition: background 0.4s;
+  }
+
+  .stage-dot.done { background: var(--accent); }
+  .stage-dot.current { background: #f0a060; }
+
+  /* Message bubbles */
+  .message {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-end;
+    animation: fadeSlideUp 0.4s ease both;
+    max-width: 88%;
+  }
+
+  .message.ai { align-self: flex-start; }
+  .message.user { align-self: flex-end; flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8633a, #f0a060);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  .bubble {
+    padding: 0.9rem 1.1rem;
+    border-radius: 18px;
+    font-size: 0.93rem;
+    line-height: 1.65;
+    font-weight: 400;
+  }
+
+  .message.ai .bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 2px 12px var(--shadow);
+    color: var(--text);
+  }
+
+  .message.user .bubble {
+    background: var(--user-bubble);
+    color: white;
+    border-bottom-right-radius: 6px;
+  }
+
+  /* Typing indicator */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: fadeSlideUp 0.3s ease both;
+    align-self: flex-start;
+  }
+
+  .typing-dots {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    border-bottom-left-radius: 6px;
+    padding: 0.85rem 1.1rem;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  .typing-dots span {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: typingPulse 1.4s ease-in-out infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  /* Stage header */
+  .stage-header {
+    text-align: center;
+    padding: 0.5rem 0;
+    animation: fadeIn 0.5s ease both;
+  }
+
+  .stage-header span {
+    background: var(--warm);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.3rem 1rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  /* Input area */
+  .input-area {
+    position: relative;
+    z-index: 10;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    flex-shrink: 0;
+    box-shadow: 0 -4px 20px var(--shadow);
+  }
+
+  .input-wrap {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-end;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  textarea {
+    flex: 1;
+    background: var(--warm);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.93rem;
+    resize: none;
+    outline: none;
+    min-height: 46px;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+    overflow-y: auto;
+  }
+
+  textarea:focus {
+    border-color: var(--accent);
+    background: white;
+  }
+
+  textarea::placeholder { color: var(--muted); }
+
+  .send-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 12px rgba(232,99,58,0.35);
+  }
+
+  .send-btn:hover:not(:disabled) {
+    background: #d4522a;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 18px rgba(232,99,58,0.45);
+  }
+
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* Final summary card */
+  .summary-card {
+    background: linear-gradient(135deg, #1a1a2e, #2d2d4e);
+    border-radius: 20px;
+    padding: 1.75rem;
+    color: white;
+    animation: fadeSlideUp 0.6s ease both;
+  }
+
+  .summary-card h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: #f0a060;
+    margin-bottom: 1rem;
+  }
+
+  .summary-card .career-tag {
+    display: inline-block;
+    background: rgba(232,99,58,0.2);
+    border: 1px solid rgba(232,99,58,0.4);
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    color: #f0a060;
+    margin: 0.2rem;
+    font-weight: 500;
+  }
+
+  .restart-btn {
+    margin-top: 1.25rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 0.65rem 1.25rem;
+    color: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 500;
+  }
+
+  .restart-btn:hover { background: rgba(255,255,255,0.18); }
+
+  /* Animations */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes typingPulse {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .welcome-card h1 { font-size: 1.4rem; }
+    .chat-area { padding: 1rem; }
+    .topbar { padding: 0.85rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="guide-avatar">🌟</div>
+  <div class="guide-info">
+    <h2>Future You</h2>
+    <p>Your personal career guide</p>
+  </div>
+  <div class="stage-pill" id="stagePill">Getting started</div>
+</div>
+
+<div class="chat-area" id="chatArea">
+
+  <div class="welcome-card">
+    <h1>Hello! I'm your <em>Future You</em> guide ✨</h1>
+    <p>I'm here to have a proper conversation with you about your future — your interests, your dreams, and what kind of career might actually suit <em>you</em>. No right or wrong answers here.</p>
+    <div class="stage-track" id="stageTrack">
+      <div class="stage-dot current"></div>
+      <div class="stage-dot"></div>
+      <div class="stage-dot"></div>
+      <div class="stage-dot"></div>
+      <div class="stage-dot"></div>
+      <div class="stage-dot"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="input-area">
+  <div class="input-wrap">
+    <textarea id="userInput" placeholder="Type your answer here…" rows="1" disabled></textarea>
+    <button class="send-btn" id="sendBtn" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+
+const SYSTEM_PROMPT = `You are a warm, wise, and encouraging guide for a young person (aged 11-14, Year 7 or 8) thinking about their future. Your goal is to have a genuine, flowing conversation to help them understand themselves better and explore potential career paths.
+
+TONE: Warm, friendly, encouraging. Never clinical or robotic. Use natural, age-appropriate language. Show genuine curiosity and enthusiasm. Be like a brilliant mentor who truly cares.
+
+STRUCTURE — work through these stages naturally across the conversation. Mark each stage transition subtly in your responses:
+1. GET TO KNOW ME: Ask open-ended questions about hobbies, favourite subjects, what a perfect day looks like. Be curious and warm.
+2. EXPLORE ASPIRATIONS: Ask about dreams, what a fulfilling life looks like to them. Validate everything.
+3. UNDERSTAND THE PRESENT: Talk about school, friendships, feelings about the future. Create a safe space.
+4. LOOK TO THE FUTURE: Help them think about how AI and technology will change careers by the time they graduate. Be honest but optimistic — human creativity, empathy, and adaptability will matter more than ever.
+5. CAREER RECOMMENDATIONS: Based on the conversation, suggest 3-4 career paths that genuinely fit them. Explain WHY each one fits based on what they've shared. Mention exciting emerging jobs too.
+6. LIFE ADVICE: Offer 2-3 genuine, thoughtful pieces of advice for navigating the next few years.
+
+RULES:
+- Ask ONE question at a time. Give them space.
+- Reference back to things they've told you — show you were listening.
+- Never be dismissive of any interest or dream.
+- Keep responses concise — 2-4 sentences max per turn, then ONE clear question.
+- When giving career recommendations, be specific and exciting. Mention jobs that might not even exist yet.
+- When you reach the final life advice stage, end with something like: "I hope our chat has been helpful! Feel free to share this with someone you trust 💛"
+
+START: Begin by warmly welcoming them and asking their first name.`;
+
+let conversationHistory = [];
+let currentStage = 0;
+let isTyping = false;
+
+const chatArea = document.getElementById('chatArea');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const stagePill = document.getElementById('stagePill');
+const stageTrack = document.getElementById('stageTrack');
+
+const stageLabels = [
+  'Getting to know you',
+  'Your aspirations',
+  'Right now',
+  'The future',
+  'Career paths',
+  'Life advice'
+];
+
+function updateStage(stage) {
+  currentStage = Math.min(stage, 5);
+  stagePill.textContent = stageLabels[currentStage];
+  stagePill.classList.toggle('active', currentStage > 0);
+
+  const dots = stageTrack.querySelectorAll('.stage-dot');
+  dots.forEach((dot, i) => {
+    dot.classList.remove('done', 'current');
+    if (i < currentStage) dot.classList.add('done');
+    else if (i === currentStage) dot.classList.add('current');
+  });
+}
+
+function scrollToBottom() {
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function addMessage(role, text) {
+  const wrap = document.createElement('div');
+  wrap.classList.add('message', role);
+
+  if (role === 'ai') {
+    const avatar = document.createElement('div');
+    avatar.classList.add('msg-avatar');
+    avatar.textContent = '🌟';
+    wrap.appendChild(avatar);
+  }
+
+  const bubble = document.createElement('div');
+  bubble.classList.add('bubble');
+  bubble.innerHTML = text.replace(/\n/g, '<br>');
+  wrap.appendChild(bubble);
+
+  chatArea.appendChild(wrap);
+  scrollToBottom();
+  return wrap;
+}
+
+function addStageHeader(label) {
+  const el = document.createElement('div');
+  el.classList.add('stage-header');
+  el.innerHTML = `<span>${label}</span>`;
+  chatArea.appendChild(el);
+  scrollToBottom();
+}
+
+function showTyping() {
+  const wrap = document.createElement('div');
+  wrap.classList.add('typing-indicator');
+  wrap.id = 'typingIndicator';
+
+  const avatar = document.createElement('div');
+  avatar.classList.add('msg-avatar');
+  avatar.textContent = '🌟';
+
+  const dots = document.createElement('div');
+  dots.classList.add('typing-dots');
+  dots.innerHTML = '<span></span><span></span><span></span>';
+
+  wrap.appendChild(avatar);
+  wrap.appendChild(dots);
+  chatArea.appendChild(wrap);
+  scrollToBottom();
+}
+
+function hideTyping() {
+  const indicator = document.getElementById('typingIndicator');
+  if (indicator) indicator.remove();
+}
+
+function detectStageFromMessage(msg) {
+  const lower = msg.toLowerCase();
+  if (lower.includes('career') || lower.includes('recommend') || lower.includes('path') || lower.includes('job') || lower.includes('profession')) return 4;
+  if (lower.includes('artificial intelligence') || lower.includes('technology') || lower.includes('future') || lower.includes('by the time you')) return 3;
+  if (lower.includes('school') || lower.includes('friendship') || lower.includes('feeling') || lower.includes('right now') || lower.includes('today')) return 2;
+  if (lower.includes('dream') || lower.includes('aspir') || lower.includes('hope') || lower.includes('fulfilling') || lower.includes('imagine')) return 1;
+  if (lower.includes('life advice') || lower.includes('important to keep') || lower.includes('navigate')) return 5;
+  return currentStage;
+}
+
+async function sendMessage(userText) {
+  if (!userText.trim() || isTyping) return;
+
+  isTyping = true;
+  userInput.disabled = true;
+  sendBtn.disabled = true;
+
+  addMessage('user', userText);
+  conversationHistory.push({ role: 'user', content: userText });
+
+  showTyping();
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: conversationHistory
+      })
+    });
+
+    const data = await response.json();
+    hideTyping();
+
+    const aiText = data.content?.[0]?.text || "I'm so sorry, something went wrong. Please try again!";
+
+    conversationHistory.push({ role: 'assistant', content: aiText });
+
+    const newStage = detectStageFromMessage(aiText);
+    if (newStage > currentStage) {
+      addStageHeader(stageLabels[newStage]);
+      updateStage(newStage);
+    }
+
+    addMessage('ai', aiText);
+
+  } catch (err) {
+    hideTyping();
+    addMessage('ai', "Hmm, I had a little hiccup there! Could you try sending your message again? 😊");
+    console.error(err);
+  }
+
+  isTyping = false;
+  userInput.disabled = false;
+  sendBtn.disabled = false;
+  userInput.focus();
+}
+
+// Auto-resize textarea
+userInput.addEventListener('input', () => {
+  userInput.style.height = 'auto';
+  userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
+  sendBtn.disabled = !userInput.value.trim() || isTyping;
+});
+
+userInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    const text = userInput.value.trim();
+    if (text && !isTyping) {
+      userInput.value = '';
+      userInput.style.height = 'auto';
+      sendBtn.disabled = true;
+      sendMessage(text);
+    }
+  }
+});
+
+sendBtn.addEventListener('click', () => {
+  const text = userInput.value.trim();
+  if (text && !isTyping) {
+    userInput.value = '';
+    userInput.style.height = 'auto';
+    sendBtn.disabled = true;
+    sendMessage(text);
+  }
+});
+
+// Start the conversation
+async function startConversation() {
+  showTyping();
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: 'Hello, I want to explore my future career.' }]
+      })
+    });
+
+    const data = await response.json();
+    hideTyping();
+
+    const aiText = data.content?.[0]?.text || "Hello! I'm so glad you're here. What's your name?";
+    conversationHistory.push({ role: 'user', content: 'Hello, I want to explore my future career.' });
+    conversationHistory.push({ role: 'assistant', content: aiText });
+
+    addMessage('ai', aiText);
+    userInput.disabled = false;
+    sendBtn.disabled = false;
+    userInput.focus();
+
+  } catch (err) {
+    hideTyping();
+    const fallback = "Hi there! I'm so glad you're here 🌟 I'm your Future You guide, and I'm here to chat with you about your future. Let's start with the most important question — what's your name?";
+    conversationHistory.push({ role: 'user', content: 'Hello, I want to explore my future career.' });
+    conversationHistory.push({ role: 'assistant', content: fallback });
+    addMessage('ai', fallback);
+    userInput.disabled = false;
+    sendBtn.disabled = false;
+    userInput.focus();
+  }
+}
+
+// Kick off
+setTimeout(startConversation, 700);
+</script>
+</body>
+</html>
